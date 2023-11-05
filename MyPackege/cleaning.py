@@ -5,6 +5,7 @@
 import os
 import glob
 import pandas as pd
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 
 class Preprocessor:
@@ -35,3 +36,10 @@ class Preprocessor:
     def recall_df(self) -> pd.DataFrame:
         path = self.return_path + '/saved_data.csv'
         return pd.read_csv(path)
+    
+    def encode_label(self, columns: list):
+        # Label encoding
+        for ii in range(len(columns)):
+            col = columns[ii]
+            sex_le = LabelEncoder()
+            self.df[col] = sex_le.fit_transform(self.df[col])
