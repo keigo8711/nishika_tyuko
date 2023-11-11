@@ -25,10 +25,7 @@ if __name__ == '__main__':
     Preprocessor.transform_moyori()
     Preprocessor.transform_kenchiku()
     Preprocessor.transform_torihiki()
-    Preprocessor.fill_null_basic()
     Preprocessor.encode_label(columns=label_encoded_columns)
-    arranged_df = Preprocessor.return_df()
-    print(arranged_df.isnull().sum())
 
     # Call data & confirm number of null
     Preprocessor.fill_null_advance(method='median', target_col=['最寄駅：距離（分）', '建ぺい率（％）', '容積率（％）'], referred_col=['面積（㎡）', '建築年'])
