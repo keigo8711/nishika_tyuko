@@ -13,19 +13,26 @@ from MyPackege import cleaning
 
 
 if __name__ == '__main__':
-    path_to_get = '/Users/keigo/github/nishika/tyuko_mansyon/data/train'
+    path_to_get_train = '/Users/keigo/github/nishika/tyuko_mansyon/data/train'
+    path_to_get_test = '/Users/keigo/github/nishika/tyuko_mansyon/data/test.csv'
     path_to_save = '/Users/keigo/github/nishika/tyuko_mansyon/data'
     path_for_result = '/Users/keigo/github/nishika/tyuko_mansyon/result'
-    label_encoded_columns = ['種類', '都道府県名', '市区町村名', '地区名', '最寄駅：名称', '間取り', '建物の構造', '都市計画', '改装', '取引の事情等']
+    label_encoded_columns = ['種類', '都道府県名', '市区町村名', '地区名', '最寄駅：名称', '間取り', '建物の構造', '用途', '今後の利用目的', '都市計画', '改装', '取引の事情等']
     standardized_columns = ['最寄駅：距離（分）', '面積（㎡）', '建築年', '建ぺい率（％）', '容積率（％）']
 
-    Preprocessor = cleaning.Preprocessor(before_path=path_to_get, after_path=path_to_save)
+    Preprocessor = cleaning.Preprocessor(before_path=path_to_get_train, after_path=path_to_save)
+    Preprocessor.combine_test_data(test_path=path_to_get_test)
 
-    # In case we need reprocess data
+    # # In case we need reprocess data
     Preprocessor.transform_moyori()
     Preprocessor.transform_kenchiku()
     Preprocessor.transform_torihiki()
+    Preprocessor.zero_padding()
     Preprocessor.encode_label(columns=label_encoded_columns)
+
+    # For debug
+    arranged_df = Preprocessor.return_df()
+    temp = arranged_df.head(10)
 
     # Call data & confirm number of null
     Preprocessor.fill_null_advance(method='median', target_col=['最寄駅：距離（分）', '建ぺい率（％）', '容積率（％）'], referred_col=['面積（㎡）', '建築年'])
@@ -35,6 +42,7 @@ if __name__ == '__main__':
     Preprocessor.save_df()
 
     # Visualize and save correlation matrix
+    arranged_df = arranged_df[arranged_df['train/test'] == 'train']
     df = arranged_df.astype('float64', errors='ignore')
     df = df.select_dtypes(include='float64')
     colormap = plt.cm.RdBu

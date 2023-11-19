@@ -25,14 +25,23 @@ class Preprocessor:
         self.get_path = before_path
         self.return_path = after_path
 
-        # Combine Files
-        print('-- Start pre-processing --')
-        file_list = glob.glob(os.path.join(self.get_path, "*.csv"))
-        for ii, file_path in enumerate(file_list):
-            if ii == 0:
-                self.df = pd.read_csv(file_path)  # Initialize
-            else:
-                self.df = pd.concat([self.df, pd.read_csv(file_path)])  # Append
+        if self.get_path != None:
+            # Combine Files
+            print('-- Start pre-processing --')
+            file_list = glob.glob(os.path.join(self.get_path, "*.csv"))
+            for ii, file_path in enumerate(file_list):
+                if ii == 0:
+                    self.df = pd.read_csv(file_path)  # Initialize
+                else:
+                    self.df = pd.concat([self.df, pd.read_csv(file_path)])  # Append
+            self.df.replace("", np.nan, inplace=True)
+            self.df = self.df.reset_index(drop=True)
+
+    def combine_test_data(self, test_path: str):
+        test_df = pd.read_csv(test_path)
+        self.df['train/test'] = 'train'
+        test_df['train/test'] = 'test'
+        self.df = pd.concat([self.df, test_df])  # Append
         self.df.replace("", np.nan, inplace=True)
         self.df = self.df.reset_index(drop=True)
 
@@ -72,9 +81,6 @@ class Preprocessor:
             elif self.df.loc[ii,'最寄駅：距離（分）'] == '2H?':
                 self.df.loc[ii,'最寄駅：距離（分）'] = 120
 
-            # if self.df.loc[ii,'最寄駅：距離（分）'] != np.nan:
-            #     self.df.loc[ii,'最寄駅：距離（分）'] = int(self.df.loc[ii,'最寄駅：距離（分）'])
-
     def transform_kenchiku(self):
         # apply transformation for each
         for ii in self.df.index:
@@ -96,8 +102,11 @@ class Preprocessor:
 
             if self.df.loc[ii,'取引時点'] != np.nan:
                 string = self.df.loc[ii,'取引時点']
-                self.df['取引年'] = int(string[:4])
-                self.df['取引四半期'] = int(string[6])
+                self.df.loc[ii,'取引年'] = int(string[:4])
+                self.df.loc[ii,'取引四半期'] = int(string[6])
+
+    def zero_padding(self):
+        self.df = self.df.fillna({'用途': '0', '今後の利用目的': '0'})
 
     def fill_null_basic(self):
         self.df.fillna(self.df.median(numeric_only=True))
@@ -143,3 +152,9 @@ class Preprocessor:
                           '取引の事情等': 'Memo',
                           '取引価格（総額）_log': 'Sales value (log)'}
         self.df.rename(columns=column_mapping, inplace=True)
+
+
+class Distributer(Preprocessor):
+
+    def __init__(self, get_path: str):
+        super().__init__(before_path=None, after_path=get_path)
