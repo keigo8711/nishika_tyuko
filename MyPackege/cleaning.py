@@ -81,6 +81,15 @@ class Preprocessor:
             elif self.df.loc[ii,'最寄駅：距離（分）'] == '2H?':
                 self.df.loc[ii,'最寄駅：距離（分）'] = 120
 
+    def transform_menseki(self):
+        # apply transformation for each
+        for ii in self.df.index:
+            if ii == int(len(self.df.index)/2):
+                print('- Half time -')
+
+            if self.df.loc[ii,'面積（㎡）'] == '2000㎡以上':
+                self.df.loc[ii,'面積（㎡）'] = 2000
+
     def transform_kenchiku(self):
         # apply transformation for each
         for ii in self.df.index:

@@ -25,6 +25,7 @@ if __name__ == '__main__':
 
     # # In case we need reprocess data
     Preprocessor.transform_moyori()
+    Preprocessor.transform_menseki()
     Preprocessor.transform_kenchiku()
     Preprocessor.transform_torihiki()
     Preprocessor.zero_padding()
