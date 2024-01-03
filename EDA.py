@@ -36,7 +36,8 @@ if __name__ == '__main__':
     temp = arranged_df.head(10)
 
     # Call data & confirm number of null
-    Preprocessor.fill_null_advance(method='median', target_col=['最寄駅：距離（分）', '建ぺい率（％）', '容積率（％）'], referred_col=['面積（㎡）', '建築年'])
+    # Preprocessor.fill_null_advance(method='median', target_col=['最寄駅：距離（分）', '建ぺい率（％）', '容積率（％）'], referred_col=['面積（㎡）', '建築年'])
+    # Preprocessor.fill_null_basic()
     Preprocessor.english_columns()
     arranged_df = Preprocessor.return_df()
     print(arranged_df.isnull().sum())
